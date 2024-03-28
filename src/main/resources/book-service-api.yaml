@@ -1,0 +1,254 @@
+openapi: 3.0.1
+info:
+  title: Book Service API
+  version: v1
+servers:
+- url: http://localhost:8081
+  description: Generated server url
+security:
+- basicAuth: []
+paths:
+  /authors/{id}:
+    get:
+      tags:
+      - book-service
+      operationId: getAuthorById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Author'
+    put:
+      tags:
+      - book-service
+      operationId: updateAuthor
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAuthorRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - book-service
+      operationId: deleteAuthor
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+  /books:
+    get:
+      tags:
+      - book-service
+      summary: "Get all the books, it is pageagle."
+      operationId: getBooks
+      parameters:
+      - name: page
+        in: query
+        description: "Which page to return, starts from 0"
+        required: true
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+      - name: size
+        in: query
+        description: "Size of the page, defaultValue: 10"
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetBooksResponse'
+    post:
+      tags:
+      - book-service
+      operationId: createBook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBookRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+  /authors:
+    get:
+      tags:
+      - book-service
+      operationId: getAuthors
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GetAuthorsResponse'
+    post:
+      tags:
+      - book-service
+      operationId: createAuthor
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuthorRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+  /books/{id}:
+    get:
+      tags:
+      - book-service
+      summary: Get book by id
+      operationId: getBookById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "404":
+          description: Book with id was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+      - book-service
+      operationId: deleteBook
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    UpdateAuthorRequest:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+    CreateBookRequest:
+      required:
+      - isbn
+      - title
+      - totalPages
+      type: object
+      properties:
+        title:
+          type: string
+        isbn:
+          type: string
+        totalPages:
+          minimum: 1
+          type: integer
+          format: int32
+        publishedDate:
+          type: string
+          format: date
+    CreateAuthorRequest:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          type: string
+    Book:
+      type: object
+      properties:
+        title:
+          type: string
+        isbn:
+          type: string
+        totalPages:
+          type: integer
+          format: int32
+        publishedDate:
+          type: string
+          format: date
+    GetBooksResponse:
+      type: object
+      properties:
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+          - NOT_FOUND
+          - INTERNAL_ERROR
+          - VALIDATION_ERROR
+        description:
+          type: string
+        errorId:
+          type: string
+    Author:
+      type: object
+      properties:
+        name:
+          type: string
+    GetAuthorsResponse:
+      type: object
+      properties:
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Author'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic

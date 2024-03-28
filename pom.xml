@@ -38,10 +38,52 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <!-- RELEASE_VERSION -->
+                <version>7.2.0</version>
+                <!-- /RELEASE_VERSION -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>${project.basedir}/src/main/resources/book-service-api.yaml</inputSpec>
+                            <library>webclient</library>
+                            <generatorName>java</generatorName>
+
+                            <configOptions>
+                                <useJakartaEe>true</useJakartaEe>
+                                <sourceFolder>src/gen/java/main</sourceFolder>
+                                <openApiNullable>false</openApiNullable>
+                            </configOptions>
+
+                            <apiPackage>hu.danubius.bookstore.restclient.api</apiPackage>
+                            <modelPackage>hu.danubius.bookstore.restclient.model</modelPackage>
+                            <invokerPackage>hu.danubius.bookstore.restclient.invoker</invokerPackage>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiTests>false</generateApiTests>
+                            <skipIfSpecIsUnchanged>true</skipIfSpecIsUnchanged>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: book-store
+
+bookStore:
+  bookService:
+    url: http://localhost:8081
+    password: password
+    username: base-user
